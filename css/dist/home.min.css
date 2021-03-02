@@ -688,6 +688,15 @@ html {
 	margin-bottom: 20px
 }
 
+.author {
+	text-align: center;
+	font-size: 12px;
+	color: #929292;
+	font-family: Montserrat, sans-serif;
+	letter-spacing: 3px;
+	margin-bottom: 20px
+}
+
 .blog-photo-section {
 	text-align: center
 }
