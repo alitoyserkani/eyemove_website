@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <title>EyeMove Technologies</title>
   <link rel="canonical" href="blog.html" />
 
@@ -104,8 +104,78 @@
           </p>
         </div>
       </div>
-      <div id="update-02" class="work-exp hideme">
-        <div class="tag-project">UPDATE 2</div>
+      <div id="work" class="work-container">
+        <div id="update-02" class="work-exp hideme">
+          <div class="tag-project">UPDATE 2</div>
+          <div class="title-project">SYSTEM ARCHITECTURE</div>
+          <div class="project-date">FEB 20, 2020</div>
+          <div class="author">By: Arjun Narayan</div>
+          <div class="spacer"></div>
+          <div class="description">
+            <h2>The Problem</h2>
+            <p>
+              Our goal is to enable powered wheelchair users to navigate with only their eyes. 
+              Without use of joysticks, head tilt, sip and puff, or other existing solutions that come with a laundry list of potential issues.
+              In order to do this, we have 3 main problems to solve:
+            </p>
+            <h3>&nbsp;&nbsp;&nbsp;&nbsp;1. Accurately Detect Eye Gaze</h3><br>
+            <h3>&nbsp;&nbsp;&nbsp;&nbsp;2. Convert to Real-World Position</h3><br>
+            <h3>&nbsp;&nbsp;&nbsp;&nbsp;3. Send Motion Commands to Wheelchair</h3><br>
+            <p>
+              The individual solution to these 3 problems will be the subject of the remainder of the blog posts on this site. 
+            </p>
+            <h2> Initial Hardware Summary </h2>
+            <p>
+              The eye tracking solution will make use of a simple common RGB cameras and a Machine Learning / Computer Vision based approach. 
+              In order to navigate it's environment and provide necessary safety for the user, the wheelchair will make use of modern autonomy solutions such as depth and tracking cameras.
+              This is illustrated below, with the eye tracking example curtisy of <a href="https://antoinelame.fr/en/gazetracking">Antoine Lamé</a>.
+            </p>
+            <h2>Basic Illustration</h2>
+            <p class="blog-photo-section">
+              <img class="blog-photo" src="img/blog/wheelchair_basic.png" alt="Image not found. Please try reloading.">
+            </p>
+            <h2>Eye Tracking Example</h2>
+            <p class="blog-photo-section">
+              <img class="blog-photo" src="img/blog/antoine.gif" alt="Image not found. Please try reloading.">
+            </p>
+
+            <h2> Compute Selection </h2>
+            To begin our hardware summary, we focused on our compute hardware selection.
+            The main requirement early on was something with enough raw AI computational power to support the simulatnous gaze tracking and autonomy stack.
+            We immediately began researching the NVIDIA Jetson line and focused on the Xavier and Nano devices.
+            Since we would be likely running 2 separate computationally intensive pipelines, the computational power was our main concern over power draw or size.
+            Thus, we went with the <a href="https://developer.nvidia.com/embedded/jetson-agx-xavier-developer-kit">NVIDIA Xavier AGX</a>.
+            Since these platforms are meant to be general purpose, they are great for this early stage while we iron out exactly what our pipelines will look like and exactly how much power we need.
+
+            <p class="blog-photo-section">
+              <img class="blog-photo" src="img/blog/xavier.jpg" alt="Image not found. Please try reloading.">
+            </p>
+
+            The Xavier runs Jetpack 4.4, an NVIDIA custom distro of Ubuntu 18. 
+            This drove our choice to use <a href="https://www.ros.org/">Robot Operating System (ROS)</a> as our middle-ware since it easily supports Ubuntu-based systems.
+            This will allow us to easily prototype our various software systems separately, and easily integrate them later during testing.
+            <br>
+            <br>
+            <h2> Sensor Selection </h2>
+            For our sensors we wanted devices that had easy open-source drivers that we could use, and that had sufficiently strong specifications.
+            For autonomy we went with the Intel Realsense line because of their <a href="https://github.com/IntelRealSense/realsense-ros">existing driver libraries</a>, and many good thing we have seen others build with them.
+            We opted for a depth camera to be used to obstacle avoidance and easy navigation, and a tracking camera for easy closed loop motion control at all levels.
+            For gaze tracking we wanted an RGB camera that was cheap, common enough to purchase, and could operate fast enough. 
+            After some research we discovered the common V4L2 (Video for Linux 2) camera interface, and an <a href="https://github.com/ros-drivers/usb_cam">open source ROS driver for it too</a>.
+            More research shows us the Logitech C920 HD camera that can do 720p at 60 fps, which was more than enough for our needs. 
+            The selection summary is shown below:
+
+            <p class="blog-photo-section">
+              <!-- <img width="700" height="350" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading."> -->
+              <img class="blog-photo-sensor" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading.">
+            </p>
+
+
+          </div>
+        </div>
+  
+      <div id="update-03" class="work-exp hideme">
+        <div class="tag-project">UPDATE 3</div>
         <div class="title-project">EMBEDDED and ELECTRICAL INTERFACE</div>
         <div class="project-date">MAR 2, 2021</div>
         <div class="author">By: Arjun Narayan</div>
@@ -113,12 +183,12 @@
         <div class="description">
           <h2>Summary</h2>
           <p>
-            Now that we had a wheelchair, we need a way to drive it without user input. 
+            Now that we had a wheelchair, we needed a way to drive it without user input. 
             All powered wheelchairs came with joysticks, but we needed some expandable interface we could integrate with our NVIDIA Jetson compute platform.
-            We reached out to a Chief Engineer at Quantum (do we want to put the link?) who has been extremely helpful in our process.
+            We reached out to a Chief Engineer at Quantum who has been extremely helpful in our process.
             He pointed us to the right technical documentation, hardware, and necessary firmware upgrades.
             In short, the wheelchair uses a proprietary CAN-based system internally to communicate between the base and other devices.
-            However, there are external devices we can utilize that exposes a DB9 RS232 interface we can use with analog voltage signals, much easier than CAN.
+            However, there are external devices we can utilize that expose a DB9 interface we can use with analog voltage signals, much easier than CAN.
             This was the avenue we decided to pursue.
             The DB9 interface is shown here:
           </p>
@@ -135,37 +205,41 @@
             Thus, our embedded interface looks like the following:
           </p>
           <p class="blog-photo-section">
-            <img class="blog-photo" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading.">
+            <!-- <img width="500" height="250" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading."> -->
+            <img class="blog-photo-sensor" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading.">
           </p>
           <p>
-            We initially planned on passing analog voltages directly from our device to the DB9 interface.
+            We initially planned on passing analog voltages directly from our Xavier to the DB9 interface.
             However, this did not work as planned for several reasons.
             Primarily, none of our on-hand devices could output analog voltages, only PWMs at best.
             We also did not have easy access to a small DAC for conversion.
             Also, the voltages expected by the wheelchair were in the 4-8V range, and so could not be supplied by a 5V microcontroller directly.
             This all means some light signal processing is needed.
           </p>
+          <br>
           <p>
-            To begin, we originally expected to output these PWMs from the Jetson.
-            However, Jetpack (NVIDIA's flavor of Ubuntu for Jetsons) requires the hardware PWM peripherals to be configured before flashing.
-            This would require us to recongifure them & reflash the computer, which would erase several weeks of work carefully setting up the 
+            To begin, we originally expected to output these PWMs from the Xavier.
+            However, Jetpack requires the hardware PWM peripherals to be configured before flashing.
+            This would require us to recongifure them & reflash the device, which would erase several weeks of work carefully setting up the 
             ML environment and dependencies, and so using an Arduino as a middle-man was an easier alternative.
             The Jetson and Arduino talk over a USB serial connection with the downstream packets containing a "mock" value of the X & Y joystick deflections.
           </p>
+          <br>
           <p>
             To solve the first problem, a basic passive RC filter can be used to convert the PWM to an analog voltage between 0 - 5V. 
             The Arduino can output PWMs (using hardware) at 62.5kHz. We referenced several articles for selecting component values, such as these: <br/>
-
-            <a href="https://www.analog.com/en/technical-articles/accurate-fast-settling-analog-voltages-from-digital-pwm-signals.html#">Accurate Fast Settling Analog VOltages from Digitial PWM Signals</a><br/>
+            <br>
+            <a href="https://www.analog.com/en/technical-articles/accurate-fast-settling-analog-voltages-from-digital-pwm-signals.html#">Accurate Fast Settling Analog Voltages from Digitial PWM Signals</a><br/>
+            <br>
             <a href="http://ww1.microchip.com/downloads/en/Appnotes/90003250A.pdf">Using PWM to Generate an Analog Output</a><br/>
-
+            <br>
             After the PWM is now an analog voltage, it must be scaled to fit inside a 4-8V range.
             This is done with a simple non-inverting opamp amplifier that amplifies 2x the input signal.
-            The final step is to ensure the incoming PWM signals are bounded to between 4-8V, which is easily done in the Arduino.
+            The final step is to ensure the incoming PWM signals are bounded to between 4-8V, which is easily done in the Arduino software.
             The final circuit diagram looks like so:
           </p>
           <p class="blog-photo-section">
-            <img class="blog-photo" src="img/blog/fydp_circuit.png" alt="Image not found. Please try reloading.">
+            <img class="blog-photo-sensor" src="img/blog/fydp_circuit.png" alt="Image not found. Please try reloading.">
           </p>
           The Enhanced Display (shown on the left) requires the "neutral" voltage to be the center of the power voltage, which is 12V.
           This is the purpose of the voltage divider on the left, with a voltage buffer going to Pin 3 (center reference). 
@@ -177,11 +251,13 @@
           <img class="blog-photo" src="img/blog/protoboard_good_top.jpg" alt="Image not found. Please try reloading.">
           <img class="blog-photo" src="img/blog/protoboard_good_back.jpg" alt="Image not found. Please try reloading.">
         </p>
+        <br>
         <p>
           This circuit worked well-enough for our purposes, but there definetly are improvements to be made.
           For instance, there is no easy hardware kill-switch currently. 
           If the Arduino were to fail and create irrational PWM outputs, there is no easy way to disconnect the hardware components without turning off the chair entirely.
         </p>
+        <br>
         <p>
           Now that Electrical is done, we can dive into the low-level embedded interface. 
           Later posts will deal more with the pure software aspect of embedded, as well as with the motion controls.
@@ -191,7 +267,7 @@
           In terms of user control, we initially tested the setup by creating a small teleop interface using the keyboard.
           This lets us control the speed & direction magnitudes with the arrow keys, and enable us to sanity check everything worked together.
           The final step in testing was to mount the wheelchair up on cinderblocks.
-          This allowed us to spin the wheels freely for testing without having the wheelchair run off on us (which is did once).
+          This allowed us to spin the wheels freely for testing without having the wheelchair run off on us (which it did once).
           Below is an early test video showcasing the initial breadboard setup and the resulting motion:
         </p>
         <p class="blog-video-section">

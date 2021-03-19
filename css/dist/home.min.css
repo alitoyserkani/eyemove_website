@@ -706,6 +706,16 @@ html {
 	max-width: 500px;
 	border-radius: 30px;
 	border: 2px solid #0082ff;
+	margin: 10px;
+	text-align: center
+}
+
+.blog-photo-sensor {
+	text-align: center;
+	width: 100%;
+	max-width: 700px;
+	border-radius: 30px;
+	border: 2px solid #0082ff;
 	margin: 10px
 }
 
