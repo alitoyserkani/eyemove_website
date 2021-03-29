@@ -83,101 +83,10 @@
     <div class="spacer"></div>
     <div class="title two hideme fade">Check out our progress!</div>
     <div id="work" class="work-container">
-      <div id="update-01" class="work-exp hideme">
-        <div class="tag-project">UPDATE 1</div>
-        <div class="title-project">WHEELCHAIR ACQUIRED</div>
-        <div class="project-date">NOV 30, 2020</div>
-        <div class="author">By: Ali Toyserkani</div>
-        <div class="spacer"></div>
-        <div class="description">
-          <h2>Summary</h2>
-          <p>
-            In order to get the project started, we needed to purchase a wheelchair that we will be able to prototype on. 
-            We chose a Quantum Q6 Edge HD powered chair as it was the best in terms of value, features, and extensibility. 
-            As an added benefit we are receiving engineering help from a contact at Quantum.
-            The wheelchair operates with 2 12V car batteries, which powers an internal AAM (Advanced Actuator Module) which control the motors.  
-          </p>
-          <h2>Photos</h2>
-          <p class="blog-photo-section">
-            <img class="blog-photo" src="img/blog/quantum-wheelchair.png" alt="Image not found. Please try reloading.">
-            <img class="blog-photo" src="img/blog/ali-saeejith-wheelchair.jpg" alt="Image not found. Please try reloading.">
-          </p>
-        </div>
-      </div>
-      <div id="work" class="work-container">
-        <div id="update-02" class="work-exp hideme">
-          <div class="tag-project">UPDATE 2</div>
-          <div class="title-project">SYSTEM ARCHITECTURE</div>
-          <div class="project-date">FEB 20, 2020</div>
-          <div class="author">By: Arjun Narayan</div>
-          <div class="spacer"></div>
-          <div class="description">
-            <h2>The Problem</h2>
-            <p>
-              Our goal is to enable powered wheelchair users to navigate with only their eyes. 
-              Without use of joysticks, head tilt, sip and puff, or other existing solutions that come with a laundry list of potential issues.
-              In order to do this, we have 3 main problems to solve:
-            </p>
-            <h3>&nbsp;&nbsp;&nbsp;&nbsp;1. Accurately Detect Eye Gaze</h3><br>
-            <h3>&nbsp;&nbsp;&nbsp;&nbsp;2. Convert to Real-World Position</h3><br>
-            <h3>&nbsp;&nbsp;&nbsp;&nbsp;3. Send Motion Commands to Wheelchair</h3><br>
-            <p>
-              The individual solution to these 3 problems will be the subject of the remainder of the blog posts on this site. 
-            </p>
-            <h2> Initial Hardware Summary </h2>
-            <p>
-              The eye tracking solution will make use of a simple common RGB cameras and a Machine Learning / Computer Vision based approach. 
-              In order to navigate it's environment and provide necessary safety for the user, the wheelchair will make use of modern autonomy solutions such as depth and tracking cameras.
-              This is illustrated below, with the eye tracking example curtisy of <a href="https://antoinelame.fr/en/gazetracking">Antoine Lamé</a>.
-            </p>
-            <h2>Basic Illustration</h2>
-            <p class="blog-photo-section">
-              <img class="blog-photo" src="img/blog/wheelchair_basic.png" alt="Image not found. Please try reloading.">
-            </p>
-            <h2>Eye Tracking Example</h2>
-            <p class="blog-photo-section">
-              <img class="blog-photo" src="img/blog/antoine.gif" alt="Image not found. Please try reloading.">
-            </p>
-
-            <h2> Compute Selection </h2>
-            To begin our hardware summary, we focused on our compute hardware selection.
-            The main requirement early on was something with enough raw AI computational power to support the simulatnous gaze tracking and autonomy stack.
-            We immediately began researching the NVIDIA Jetson line and focused on the Xavier and Nano devices.
-            Since we would be likely running 2 separate computationally intensive pipelines, the computational power was our main concern over power draw or size.
-            Thus, we went with the <a href="https://developer.nvidia.com/embedded/jetson-agx-xavier-developer-kit">NVIDIA Xavier AGX</a>.
-            Since these platforms are meant to be general purpose, they are great for this early stage while we iron out exactly what our pipelines will look like and exactly how much power we need.
-
-            <p class="blog-photo-section">
-              <img class="blog-photo" src="img/blog/xavier.jpg" alt="Image not found. Please try reloading.">
-            </p>
-
-            The Xavier runs Jetpack 4.4, an NVIDIA custom distro of Ubuntu 18. 
-            This drove our choice to use <a href="https://www.ros.org/">Robot Operating System (ROS)</a> as our middle-ware since it easily supports Ubuntu-based systems.
-            This will allow us to easily prototype our various software systems separately, and easily integrate them later during testing.
-            <br>
-            <br>
-            <h2> Sensor Selection </h2>
-            For our sensors we wanted devices that had easy open-source drivers that we could use, and that had sufficiently strong specifications.
-            For autonomy we went with the Intel Realsense line because of their <a href="https://github.com/IntelRealSense/realsense-ros">existing driver libraries</a>, and many good thing we have seen others build with them.
-            We opted for a depth camera to be used to obstacle avoidance and easy navigation, and a tracking camera for easy closed loop motion control at all levels.
-            For gaze tracking we wanted an RGB camera that was cheap, common enough to purchase, and could operate fast enough. 
-            After some research we discovered the common V4L2 (Video for Linux 2) camera interface, and an <a href="https://github.com/ros-drivers/usb_cam">open source ROS driver for it too</a>.
-            More research shows us the Logitech C920 HD camera that can do 720p at 60 fps, which was more than enough for our needs. 
-            The selection summary is shown below:
-
-            <p class="blog-photo-section">
-              <!-- <img width="700" height="350" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading."> -->
-              <img class="blog-photo-sensor" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading.">
-            </p>
-
-
-          </div>
-        </div>
-  
       <div id="update-03" class="work-exp hideme">
         <div class="tag-project">UPDATE 3</div>
         <div class="title-project">EMBEDDED and ELECTRICAL INTERFACE</div>
-        <div class="project-date">MAR 2, 2021</div>
+        <div class="project-date">FEB 20, 2021</div>
         <div class="author">By: Arjun Narayan</div>
         <div class="spacer"></div>
         <div class="description">
@@ -280,6 +189,99 @@
           Stay tuned for much more!
         </p>
         </div>
+      </div> 
+      <div id="update-02" class="work-exp hideme">
+        <div class="tag-project">UPDATE 2</div>
+        <div class="title-project">SYSTEM ARCHITECTURE</div>
+        <div class="project-date">JAN 20, 2020</div>
+        <div class="author">By: Arjun Narayan</div>
+        <div class="spacer"></div>
+        <div class="description">
+          <h2>The Problem</h2>
+          <p>
+            Our goal is to enable powered wheelchair users to navigate with only their eyes. 
+            Without use of joysticks, head tilt, sip and puff, or other existing solutions that come with a laundry list of potential issues.
+            In order to do this, we have 3 main problems to solve:
+          </p>
+          <h3>&nbsp;&nbsp;&nbsp;&nbsp;1. Accurately Detect Eye Gaze</h3><br>
+          <h3>&nbsp;&nbsp;&nbsp;&nbsp;2. Convert to Real-World Position</h3><br>
+          <h3>&nbsp;&nbsp;&nbsp;&nbsp;3. Send Motion Commands to Wheelchair</h3><br>
+          <p>
+            The individual solution to these 3 problems will be the subject of the remainder of the blog posts on this site. 
+          </p>
+          <h2> Initial Hardware Summary </h2>
+          <p>
+            The eye tracking solution will make use of a simple common RGB cameras and a Machine Learning / Computer Vision based approach. 
+            In order to navigate it's environment and provide necessary safety for the user, the wheelchair will make use of modern autonomy solutions such as depth and tracking cameras.
+            This is illustrated below, with the eye tracking example curtisy of <a href="https://antoinelame.fr/en/gazetracking">Antoine Lamé</a>.
+          </p>
+          <h2>Basic Illustration</h2>
+          <p class="blog-photo-section">
+            <img class="blog-photo" src="img/blog/wheelchair_basic.png" alt="Image not found. Please try reloading.">
+          </p>
+          <h2>Eye Tracking Example</h2>
+          <p class="blog-photo-section">
+            <img class="blog-photo" src="img/blog/antoine.gif" alt="Image not found. Please try reloading.">
+          </p>
+
+          <h2> Compute Selection </h2>
+          To begin our hardware summary, we focused on our compute hardware selection.
+          The main requirement early on was something with enough raw AI computational power to support the simulatnous gaze tracking and autonomy stack.
+          We immediately began researching the NVIDIA Jetson line and focused on the Xavier and Nano devices.
+          Since we would be likely running 2 separate computationally intensive pipelines, the computational power was our main concern over power draw or size.
+          Thus, we went with the <a href="https://developer.nvidia.com/embedded/jetson-agx-xavier-developer-kit">NVIDIA Xavier AGX</a>.
+          Since these platforms are meant to be general purpose, they are great for this early stage while we iron out exactly what our pipelines will look like and exactly how much power we need.
+
+          <p class="blog-photo-section">
+            <img class="blog-photo" src="img/blog/xavier.jpg" alt="Image not found. Please try reloading.">
+          </p>
+
+          The Xavier runs Jetpack 4.4, an NVIDIA custom distro of Ubuntu 18. 
+          This drove our choice to use <a href="https://www.ros.org/">Robot Operating System (ROS)</a> as our middle-ware since it easily supports Ubuntu-based systems.
+          This will allow us to easily prototype our various software systems separately, and easily integrate them later during testing.
+          <br>
+          <br>
+          <h2> Sensor Selection </h2>
+          For our sensors we wanted devices that had easy open-source drivers that we could use, and that had sufficiently strong specifications.
+          For autonomy we went with the Intel Realsense line because of their <a href="https://github.com/IntelRealSense/realsense-ros">existing driver libraries</a>, and many good thing we have seen others build with them.
+          We opted for a depth camera to be used to obstacle avoidance and easy navigation, and a tracking camera for easy closed loop motion control at all levels.
+          For gaze tracking we wanted an RGB camera that was cheap, common enough to purchase, and could operate fast enough. 
+          After some research we discovered the common V4L2 (Video for Linux 2) camera interface, and an <a href="https://github.com/ros-drivers/usb_cam">open source ROS driver for it too</a>.
+          More research shows us the Logitech C920 HD camera that can do 720p at 60 fps, which was more than enough for our needs. 
+          The selection summary is shown below:
+
+          <p class="blog-photo-section">
+            <!-- <img width="700" height="350" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading."> -->
+            <img class="blog-photo-sensor" src="img/blog/sensor_selection.png" alt="Image not found. Please try reloading.">
+          </p>
+
+
+        </div>
+    </div>
+      <div id="update-01" class="work-exp hideme">
+        <div class="tag-project">UPDATE 1</div>
+        <div class="title-project">WHEELCHAIR ACQUIRED</div>
+        <div class="project-date">NOV 30, 2020</div>
+        <div class="author">By: Ali Toyserkani</div>
+        <div class="spacer"></div>
+        <div class="description">
+          <h2>Summary</h2>
+          <p>
+            In order to get the project started, we needed to purchase a wheelchair that we will be able to prototype on. 
+            We chose a Quantum Q6 Edge HD powered chair as it was the best in terms of value, features, and extensibility. 
+            As an added benefit we are receiving engineering help from a contact at Quantum.
+            The wheelchair operates with 2 12V car batteries, which powers an internal AAM (Advanced Actuator Module) which control the motors.  
+          </p>
+          <h2>Photos</h2>
+          <p class="blog-photo-section">
+            <img class="blog-photo" src="img/blog/quantum-wheelchair.png" alt="Image not found. Please try reloading.">
+            <img class="blog-photo" src="img/blog/ali-saeejith-wheelchair.jpg" alt="Image not found. Please try reloading.">
+          </p>
+        </div>
+      </div>
+
+  
+      
     </div>
   </article>
 
