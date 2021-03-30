@@ -174,113 +174,131 @@
           </div>
         </div>
   
-      <div id="update-03" class="work-exp hideme">
-        <div class="tag-project">UPDATE 3</div>
-        <div class="title-project">EMBEDDED and ELECTRICAL INTERFACE</div>
-        <div class="project-date">MAR 2, 2021</div>
-        <div class="author">By: Arjun Narayan</div>
-        <div class="spacer"></div>
-        <div class="description">
-          <h2>Summary</h2>
-          <p>
-            Now that we had a wheelchair, we needed a way to drive it without user input. 
-            All powered wheelchairs came with joysticks, but we needed some expandable interface we could integrate with our NVIDIA Jetson compute platform.
-            We reached out to a Chief Engineer at Quantum who has been extremely helpful in our process.
-            He pointed us to the right technical documentation, hardware, and necessary firmware upgrades.
-            In short, the wheelchair uses a proprietary CAN-based system internally to communicate between the base and other devices.
-            However, there are external devices we can utilize that expose a DB9 interface we can use with analog voltage signals, much easier than CAN.
-            This was the avenue we decided to pursue.
-            The DB9 interface is shown here:
-          </p>
+        <div id="update-03" class="work-exp hideme">
+          <div class="tag-project">UPDATE 3</div>
+          <div class="title-project">EMBEDDED and ELECTRICAL INTERFACE</div>
+          <div class="project-date">MAR 2, 2021</div>
+          <div class="author">By: Arjun Narayan</div>
+          <div class="spacer"></div>
+          <div class="description">
+            <h2>Summary</h2>
+            <p>
+              Now that we had a wheelchair, we needed a way to drive it without user input. 
+              All powered wheelchairs came with joysticks, but we needed some expandable interface we could integrate with our NVIDIA Jetson compute platform.
+              We reached out to a Chief Engineer at Quantum who has been extremely helpful in our process.
+              He pointed us to the right technical documentation, hardware, and necessary firmware upgrades.
+              In short, the wheelchair uses a proprietary CAN-based system internally to communicate between the base and other devices.
+              However, there are external devices we can utilize that expose a DB9 interface we can use with analog voltage signals, much easier than CAN.
+              This was the avenue we decided to pursue.
+              The DB9 interface is shown here:
+            </p>
+            <p class="blog-photo-section">
+              <img class="blog-photo" src="img/blog/interface.png" alt="Image not found. Please try reloading.">
+            </p>
+            <p>
+              Pin 3 (center) expects the "neutral" voltage, which is half of the power voltage (12V), so 6V. 
+              This is the voltage at which the wheelchair will be at stand-still.
+              By increasing the voltage slightly (&#60; 2V) on Pins 1 & 2, a proportional change in the wheelchair's forward speed & angular speed (direction) will be applied.
+              We found in other sources that the 2 power pins (7 & 9) must be shorted together, and also that Pin 8 acts as the ground for any external device.
+              All other pins can remain untouched.
+              Of the potential devices we attempted integrating with the wheelchair, the Quantum QLogic Enhanced Display worked the best for interfacing over DB9.
+              Thus, our embedded interface looks like the following:
+            </p>
+            <p class="blog-photo-section">
+              <!-- <img width="500" height="250" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading."> -->
+              <img class="blog-photo-sensor" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading.">
+            </p>
+            <p>
+              We initially planned on passing analog voltages directly from our Xavier to the DB9 interface.
+              However, this did not work as planned for several reasons.
+              Primarily, none of our on-hand devices could output analog voltages, only PWMs at best.
+              We also did not have easy access to a small DAC for conversion.
+              Also, the voltages expected by the wheelchair were in the 4-8V range, and so could not be supplied by a 5V microcontroller directly.
+              This all means some light signal processing is needed.
+            </p>
+            <br>
+            <p>
+              To begin, we originally expected to output these PWMs from the Xavier.
+              However, Jetpack requires the hardware PWM peripherals to be configured before flashing.
+              This would require us to recongifure them & reflash the device, which would erase several weeks of work carefully setting up the 
+              ML environment and dependencies, and so using an Arduino as a middle-man was an easier alternative.
+              The Jetson and Arduino talk over a USB serial connection with the downstream packets containing a "mock" value of the X & Y joystick deflections.
+            </p>
+            <br>
+            <p>
+              To solve the first problem, a basic passive RC filter can be used to convert the PWM to an analog voltage between 0 - 5V. 
+              The Arduino can output PWMs (using hardware) at 62.5kHz. We referenced several articles for selecting component values, such as these: <br/>
+              <br>
+              <a href="https://www.analog.com/en/technical-articles/accurate-fast-settling-analog-voltages-from-digital-pwm-signals.html#">Accurate Fast Settling Analog Voltages from Digitial PWM Signals</a><br/>
+              <br>
+              <a href="http://ww1.microchip.com/downloads/en/Appnotes/90003250A.pdf">Using PWM to Generate an Analog Output</a><br/>
+              <br>
+              After the PWM is now an analog voltage, it must be scaled to fit inside a 4-8V range.
+              This is done with a simple non-inverting opamp amplifier that amplifies 2x the input signal.
+              The final step is to ensure the incoming PWM signals are bounded to between 4-8V, which is easily done in the Arduino software.
+              The final circuit diagram looks like so:
+            </p>
+            <p class="blog-photo-section">
+              <img class="blog-photo-sensor" src="img/blog/fydp_circuit.png" alt="Image not found. Please try reloading.">
+            </p>
+            The Enhanced Display (shown on the left) requires the "neutral" voltage to be the center of the power voltage, which is 12V.
+            This is the purpose of the voltage divider on the left, with a voltage buffer going to Pin 3 (center reference). 
+            Pins 1 & 2 are then used for controlling speed & direction of the wheelchair. 
+            The final extra addition to the signal processing was an extra 10uF filter capacitor to remove any excess ripple or noise.
+            Below is our initial breadboard mock-up of this circuit, and our final protoboard version:
           <p class="blog-photo-section">
-            <img class="blog-photo" src="img/blog/interface.png" alt="Image not found. Please try reloading.">
-          </p>
-          <p>
-            Pin 3 (center) expects the "neutral" voltage, which is half of the power voltage (12V), so 6V. 
-            This is the voltage at which the wheelchair will be at stand-still.
-            By increasing the voltage slightly (&#60; 2V) on Pins 1 & 2, a proportional change in the wheelchair's forward speed & angular speed (direction) will be applied.
-            We found in other sources that the 2 power pins (7 & 9) must be shorted together, and also that Pin 8 acts as the ground for any external device.
-            All other pins can remain untouched.
-            Of the potential devices we attempted integrating with the wheelchair, the Quantum QLogic Enhanced Display worked the best for interfacing over DB9.
-            Thus, our embedded interface looks like the following:
-          </p>
-          <p class="blog-photo-section">
-            <!-- <img width="500" height="250" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading."> -->
-            <img class="blog-photo-sensor" src="img/blog/embedded-interface.png" alt="Image not found. Please try reloading.">
-          </p>
-          <p>
-            We initially planned on passing analog voltages directly from our Xavier to the DB9 interface.
-            However, this did not work as planned for several reasons.
-            Primarily, none of our on-hand devices could output analog voltages, only PWMs at best.
-            We also did not have easy access to a small DAC for conversion.
-            Also, the voltages expected by the wheelchair were in the 4-8V range, and so could not be supplied by a 5V microcontroller directly.
-            This all means some light signal processing is needed.
+            <img class="blog-photo" src="img/blog/breadboard.jpg" alt="Image not found. Please try reloading.">
+            <img class="blog-photo" src="img/blog/protoboard_good_top.jpg" alt="Image not found. Please try reloading.">
+            <img class="blog-photo" src="img/blog/protoboard_good_back.jpg" alt="Image not found. Please try reloading.">
           </p>
           <br>
           <p>
-            To begin, we originally expected to output these PWMs from the Xavier.
-            However, Jetpack requires the hardware PWM peripherals to be configured before flashing.
-            This would require us to recongifure them & reflash the device, which would erase several weeks of work carefully setting up the 
-            ML environment and dependencies, and so using an Arduino as a middle-man was an easier alternative.
-            The Jetson and Arduino talk over a USB serial connection with the downstream packets containing a "mock" value of the X & Y joystick deflections.
+            This circuit worked well-enough for our purposes, but there definetly are improvements to be made.
+            For instance, there is no easy hardware kill-switch currently. 
+            If the Arduino were to fail and create irrational PWM outputs, there is no easy way to disconnect the hardware components without turning off the chair entirely.
           </p>
           <br>
           <p>
-            To solve the first problem, a basic passive RC filter can be used to convert the PWM to an analog voltage between 0 - 5V. 
-            The Arduino can output PWMs (using hardware) at 62.5kHz. We referenced several articles for selecting component values, such as these: <br/>
-            <br>
-            <a href="https://www.analog.com/en/technical-articles/accurate-fast-settling-analog-voltages-from-digital-pwm-signals.html#">Accurate Fast Settling Analog Voltages from Digitial PWM Signals</a><br/>
-            <br>
-            <a href="http://ww1.microchip.com/downloads/en/Appnotes/90003250A.pdf">Using PWM to Generate an Analog Output</a><br/>
-            <br>
-            After the PWM is now an analog voltage, it must be scaled to fit inside a 4-8V range.
-            This is done with a simple non-inverting opamp amplifier that amplifies 2x the input signal.
-            The final step is to ensure the incoming PWM signals are bounded to between 4-8V, which is easily done in the Arduino software.
-            The final circuit diagram looks like so:
+            Now that Electrical is done, we can dive into the low-level embedded interface. 
+            Later posts will deal more with the pure software aspect of embedded, as well as with the motion controls.
+            Now, the Arduino can only output a PWM at a 0-255 resolution, so our downstream message to the Arduino will be 1 byte each for the speed & direction values.
+            The Arduino code will listen on the serial port for a package containing 2 bytes, or else will bring the wheelchair speed back to 0.
+            The wheelchair base already has a velocity controller that handles the speed ramp up and down for us, and so this is not a concern.
+            In terms of user control, we initially tested the setup by creating a small teleop interface using the keyboard.
+            This lets us control the speed & direction magnitudes with the arrow keys, and enable us to sanity check everything worked together.
+            The final step in testing was to mount the wheelchair up on cinderblocks.
+            This allowed us to spin the wheels freely for testing without having the wheelchair run off on us (which it did once).
+            Below is an early test video showcasing the initial breadboard setup and the resulting motion:
           </p>
-          <p class="blog-photo-section">
-            <img class="blog-photo-sensor" src="img/blog/fydp_circuit.png" alt="Image not found. Please try reloading.">
+          <p class="blog-video-section">
+            <iframe width="640" height="480"
+              src="https://www.youtube.com/embed/nyDg6v5E0uU">
+            </iframe>
           </p>
-          The Enhanced Display (shown on the left) requires the "neutral" voltage to be the center of the power voltage, which is 12V.
-          This is the purpose of the voltage divider on the left, with a voltage buffer going to Pin 3 (center reference). 
-          Pins 1 & 2 are then used for controlling speed & direction of the wheelchair. 
-          The final extra addition to the signal processing was an extra 10uF filter capacitor to remove any excess ripple or noise.
-          Below is our initial breadboard mock-up of this circuit, and our final protoboard version:
-        <p class="blog-photo-section">
-          <img class="blog-photo" src="img/blog/breadboard.jpg" alt="Image not found. Please try reloading.">
-          <img class="blog-photo" src="img/blog/protoboard_good_top.jpg" alt="Image not found. Please try reloading.">
-          <img class="blog-photo" src="img/blog/protoboard_good_back.jpg" alt="Image not found. Please try reloading.">
-        </p>
-        <br>
-        <p>
-          This circuit worked well-enough for our purposes, but there definetly are improvements to be made.
-          For instance, there is no easy hardware kill-switch currently. 
-          If the Arduino were to fail and create irrational PWM outputs, there is no easy way to disconnect the hardware components without turning off the chair entirely.
-        </p>
-        <br>
-        <p>
-          Now that Electrical is done, we can dive into the low-level embedded interface. 
-          Later posts will deal more with the pure software aspect of embedded, as well as with the motion controls.
-          Now, the Arduino can only output a PWM at a 0-255 resolution, so our downstream message to the Arduino will be 1 byte each for the speed & direction values.
-          The Arduino code will listen on the serial port for a package containing 2 bytes, or else will bring the wheelchair speed back to 0.
-          The wheelchair base already has a velocity controller that handles the speed ramp up and down for us, and so this is not a concern.
-          In terms of user control, we initially tested the setup by creating a small teleop interface using the keyboard.
-          This lets us control the speed & direction magnitudes with the arrow keys, and enable us to sanity check everything worked together.
-          The final step in testing was to mount the wheelchair up on cinderblocks.
-          This allowed us to spin the wheels freely for testing without having the wheelchair run off on us (which it did once).
-          Below is an early test video showcasing the initial breadboard setup and the resulting motion:
-        </p>
-        <p class="blog-video-section">
-          <iframe width="640" height="480"
-            src="https://www.youtube.com/embed/nyDg6v5E0uU">
-          </iframe>
-        </p>
-        <p>
-          This progress greatly enables the rest of the team to test on the wheelchair platform, and still has some work in cleanup and optimization to do.
-          Stay tuned for much more!
-        </p>
+          <p>
+            This progress greatly enables the rest of the team to test on the wheelchair platform, and still has some work in cleanup and optimization to do.
+            Stay tuned for much more!
+          </p>
         </div>
     </div>
+
+    <div id="update-04" class="work-exp hideme">
+      <div class="tag-project">UPDATE 4</div>
+      <div class="title-project">Gaze Tracking Pipeline</div>
+      <div class="project-date">MAR 9, 2021</div>
+      <div class="author">By: Saeejith Nair</div>
+      <div class="spacer"></div>
+      <div class="description">
+        <h2>Summary</h2>
+        <p>
+          While the electrical interfacing and embedded systems work was being done, we were also working on improving the gaze tracking system and overall software pipeline. At first, we trained a machine learning model on the GazeCapture dataset based on the <a href="https://gazecapture.csail.mit.edu/"> iTracker architecture </a>. This trained model yielded good results on test dataset, however, it failed to perform as well for our use-case. After extensive debugging, it was determined that the root cause was due to irregular detection of facial landmarks (e.g. face and eye bounding boxes given an input image). 
+        </p>
+        <br>
+        <p>
+          Due to the difficulty in detecting consistently sized landmarks, the team decided to pivot from our custom trained model to a pre-trained model architecture released by NVIDIA: <a href="https://research.nvidia.com/publication/2019-10_Few-Shot-Adaptive-Gaze"> Few-Shot Gaze</a>. 
+        </p>
+    </div>
+  </div>
   </article>
 
   <footer class="footer light">
