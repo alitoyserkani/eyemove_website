@@ -291,12 +291,39 @@
       <div class="description">
         <h2>Summary</h2>
         <p>
-          While the electrical interfacing and embedded systems work was being done, we were also working on improving the gaze tracking system and overall software pipeline. At first, we trained a machine learning model on the GazeCapture dataset based on the <a href="https://gazecapture.csail.mit.edu/"> iTracker architecture </a>. This trained model yielded good results on test dataset, however, it failed to perform as well for our use-case. After extensive debugging, it was determined that the root cause was due to irregular detection of facial landmarks (e.g. face and eye bounding boxes given an input image). 
+          While the electrical interfacing and embedded systems work was being done, we were also working on improving the gaze tracking system and overall software pipeline. At first, we trained a machine learning model on the GazeCapture dataset based on the <a href="https://gazecapture.csail.mit.edu/"> iTracker architecture </a>. Based on a standard CNN architecture, this model was trained to take in cropped images of the left eye, right eye, face, as well as a binary mask indicating the location of the face on the original image, with the network outputting a point on the screen indicating the location of gaze. The following image shows the architecture in detail.
         </p>
-        <br>
-        <p>
-          Due to the difficulty in detecting consistently sized landmarks, the team decided to pivot from our custom trained model to a pre-trained model architecture released by NVIDIA: <a href="https://research.nvidia.com/publication/2019-10_Few-Shot-Adaptive-Gaze"> Few-Shot Gaze</a>. 
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/GazeCapture_Architecture.png" alt="Image not found. Please try reloading.">
         </p>
+
+        <p>This trained model yielded good results on the test dataset, however, it failed to perform as well for our use-case. After extensive debugging, it was determined that the root cause was due to irregular detection of facial landmarks (e.g. face and eye bounding boxes given an input image). Due to the difficulty in detecting consistently sized landmarks, the team decided to pivot from our custom trained model to a pre-trained model architecture released by NVIDIA: <a href="https://research.nvidia.com/publication/2019-10_Few-Shot-Adaptive-Gaze"> Few-Shot Adaptive Gaze Estimation</a>. 
+        </p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/nv_faze.jpg" alt="Image not found. Please try reloading.">
+        </p>
+
+        <p> The above image (courtesy of Nvidia), shows the architecture of their novel network which allows further refinement of the network, by retraining it using images obtained from a personalized calibration sequence. This network was also advertised as being capable of being adapted to any new person to yield significant performance gains and an overall accuracy improvement of 19% compared to the iTracker architecture we previously tried. Thus, although it wasn't developed specifically for low-power edge devices (like the Nvidia Jetson we had selected as our compute platform), we decided to give it a shot. After building an inferene pipeline that was able to run this model on the Jetson however, qualitative testing showed that the accuracy wasn't any better than iTracker. Even worse, the latency was significantly worse, taking almost 1.5 seconds to perform inference. This latency was far worse than our response speed specification of minimum 10Hz (100 ms), forcing us to look into two other alternatives: 
+          <li>Improve the current Nvidia FAZE model by employing techniques such as layer pruning, model quantization, and deployment using Nvidia's TensorRT framework.</li>
+          <li>Seek another model or architecture that can provide good results while running in real-time.</li>
+        
+          <br>
+
+        Due to the extensive development time required for the first approach, we decided to focus on the second approach for the time being, to get an end-to-end system fully working as soon as possible. How did we do this? We'd earlier tried running the the demo provided by <a href="https://antoinelame.fr/en/gazetracking">Antoine Lamé</a> on our Jetson, and found that it was incredibly fast and could run in real-time. Inspired by this, we dug into the demo and found that it relied on a pretrained model provided by DLIB for estimating facial landmarks and pupil locations. Thus, by extracting the pretrained model, we were able to build a real-time gaze-tracking pipeline that performed as follows.
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/DLIB_pipeline.png" alt="Image not found. Please try reloading." height="600">
+        </p>
+
+
+        This pipeline worked well and met our latency specifications, as we could detect a patient's eye-gaze within 60ms. However, it did not consistently meet our accuracy specification of being within ±5 degrees of a patient's exact gaze location, although the general gaze direction and magnitude was correct. 
+        </p>
+      
+      <p>
+        How did we get around this challenge? Find out in the next blog post!
+      </p>
     </div>
   </div>
   </article>
