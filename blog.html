@@ -284,7 +284,7 @@
 
     <div id="update-04" class="work-exp hideme">
       <div class="tag-project">UPDATE 4</div>
-      <div class="title-project">Gaze Tracking Pipeline</div>
+      <div class="title-project">Where are you looking?</div>
       <div class="project-date">MAR 9, 2021</div>
       <div class="author">By: Saeejith Nair</div>
       <div class="spacer"></div>
@@ -326,6 +326,35 @@
       </p>
     </div>
   </div>
+
+  <div id="update-05" class="work-exp hideme">
+    <div class="tag-project">UPDATE 5</div>
+    <div class="title-project">Gaze Tracking Pipeline</div>
+    <div class="project-date">MAR 9, 2021</div>
+    <div class="author">By: Saeejith Nair</div>
+    <div class="spacer"></div>
+    <div class="description">
+      <h2>Summary</h2>
+      <p>
+        In our previous blog post, we described how the final gaze tracking model did not meet our accuracy specification of being within ±5 degrees of a patient's exact gaze location. However, because the general magnitude and direction of the vector was correct, we decided to change our approach and user experience such that we could achieve robust control, even with slightly worse accuracy.
+      </p>
+
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/gaze_quadrants.png" alt="Image not found. Please try reloading.">
+      </p>
+
+      <p>
+        Essentially, we determined that we could accurately map a user's gaze to one of five sections on a virtual plane parallel to the user's face. These sections could then be mapped to various system inputs such as turn left, turn right, drive forward, toggle start/stop, and toggle reverse - all the states required for robust wheelchair operation. Sufficient padding between each section as well as timed latching mechanisms ensured that users wouldn't keep accidentally switching between states. Once the state got calculated, it was converted to a velocity and sent to the motor control interface.
+      </p>
+
+      <p>This approach worked rather well, except for the occasions when the model failed to detect the facial landmarks required for computing the gaze vector. This was seen to happen in low light conditions, in environments with lots of shadows, in rainy weather, and when there was excessive glare on eye glasses. Thus, a way was required to interpolate between successful detections for the period when no gaze was detected. To do this, the gaze vector was passed through a linear Kalman Filter to interpolate between missed detections, and smooth out the noisy predictions. The result was a real-time gaze tracking system that accurately mapped a user's gaze to the corresponding input state.</p>
+
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/sw_architecture.png" alt="Image not found. Please try reloading.">
+      </p>
+
+  </div>
+
   </article>
 
   <footer class="footer light">
