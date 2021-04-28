@@ -83,23 +83,113 @@
     <div class="spacer"></div>
     <div class="title two hideme fade">Check out our progress!</div>
     <div id="work" class="work-container">
-      <div id="update-04" class="work-exp hideme">
-        <div class="tag-project">UPDATE 6</div>
-        <div class="title-project">MECHANICAL ASSEMBLY & SYSTEM BUILD</div>
-        <div class="project-date">FEB 24, 2021</div>
-        <div class="author">By: Ali Toyserkani</div>
-        <div class="spacer"></div>
-        <div class="description">
-          <h2>Summary</h2>
-          <p>
-            The internal and external 
-          </p>
-          <h2>Photos</h2>
-          <p class="blog-photo-section">
-            <img class="blog-photo" src="img/blog/wheelchair_build_outside.jpg" alt="Image not found. Please try reloading.">
-          </p>
-        </div>
-      </div>
+
+    <!-- UPDATE 5  ----------------------------------------------------------------------------------------------------------------------------------------------------->
+    <div id="update-06" class="work-exp hideme">
+      <div class="tag-project">UPDATE 6</div>
+      <div class="title-project">Gaze Tracking Pipeline</div>
+      <div class="project-date">MAR 15, 2021</div>
+      <div class="author">By: Saeejith Nair</div>
+      <div class="spacer"></div>
+      <div class="description">
+        <h2>Summary</h2>
+        <p>
+          In our previous blog post, we described how the final gaze tracking model did not meet our accuracy specification of being within ±5 degrees of a patient's exact gaze location. However, because the general magnitude and direction of the vector was correct, we decided to change our approach and user experience such that we could achieve robust control, even with slightly worse accuracy.
+        </p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/gaze_quadrants.png" alt="Image not found. Please try reloading.">
+        </p>
+
+        <p>
+          Essentially, we determined that we could accurately map a user's gaze to one of five sections on a virtual plane parallel to the user's face. These sections could then be mapped to various system inputs such as turn left, turn right, drive forward, toggle start/stop, and toggle reverse - all the states required for robust wheelchair operation. Sufficient padding between each section as well as timed latching mechanisms ensured that users wouldn't keep accidentally switching between states. Once the state got calculated, it was converted to a velocity and sent to the motor control interface. The state machine diagram is shown below.
+        </p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/state_machine.png" alt="Image not found. Please try reloading.">
+        </p>
+
+        <p>This approach worked rather well, except for the occasions when the model failed to detect the facial landmarks required for computing the gaze vector. This was seen to happen in low light conditions, in environments with lots of shadows, in rainy weather, and when there was excessive glare on eye glasses. Thus, a way was required to interpolate between successful detections for the period when no gaze was detected. To do this, the gaze vector was passed through a linear Kalman Filter to interpolate between missed detections, and smooth out the noisy predictions. The Kalman filter took in the point of gaze as a 2D coordinate {x,y} and used a constant velocity motion model to predict the change in gaze over time. To account for the measurement error, the sensor was modelled with an uncertainty of N(0,10<sup>2</sup>) pixels, a value that was empirically found to provide a good balance between minimizing accuracy while maximizing speed of convergence. The result was a real-time gaze tracking system that accurately mapped a user's gaze to the corresponding input state.</p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/sw_architecture.png" alt="Image not found. Please try reloading.">
+        </p>
+    </div>
+    </div>
+
+    <!-- UPDATE 4  ----------------------------------------------------------------------------------------------------------------------------------------------------->
+    <div id="update-05" class="work-exp hideme">
+      <div class="tag-project">UPDATE 5</div>
+      <div class="title-project">Where are you looking?</div>
+      <div class="project-date">MAR 9, 2021</div>
+      <div class="author">By: Saeejith Nair</div>
+      <div class="spacer"></div>
+      <div class="description">
+        <h2>Summary</h2>
+        <p>
+          While the electrical interfacing and embedded systems work was being done, we were also working on improving the gaze tracking system and overall software pipeline. At first, we trained a machine learning model on the GazeCapture dataset based on the <a href="https://gazecapture.csail.mit.edu/"> iTracker architecture </a>. Based on a standard CNN architecture, this model was trained to take in cropped images of the left eye, right eye, face, as well as a binary mask indicating the location of the face on the original image, with the network outputting a point on the screen indicating the location of gaze. The following image shows the architecture in detail.
+        </p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/Gazecapture_Architecture.png" alt="Image not found. Please try reloading.">
+        </p>
+
+        <p>This trained model yielded good results on the test dataset, however, it failed to perform as well for our use-case. After extensive debugging, it was determined that the root cause was due to irregular detection of facial landmarks (e.g. face and eye bounding boxes given an input image). Due to the difficulty in detecting consistently sized landmarks, the team decided to pivot from our custom trained model to a pre-trained model architecture released by NVIDIA: <a href="https://research.nvidia.com/publication/2019-10_Few-Shot-Adaptive-Gaze"> Few-Shot Adaptive Gaze Estimation</a>. 
+        </p>
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/nv_faze.jpg" alt="Image not found. Please try reloading.">
+        </p>
+
+        <p> The above image (courtesy of Nvidia), shows the architecture of their novel architecture which allows further refinement of the network, by retraining it using images obtained from a personalized calibration sequence. This network was also advertised as being capable of being adapted to any new person to yield significant performance gains and an overall accuracy improvement of 19% compared to the iTracker architecture we previously tried. Thus, although it wasn't developed specifically for low-power edge devices (like the Nvidia Jetson we had selected as our compute platform), we decided to give it a shot. After building an inference pipeline that was able to run this model on the Jetson, qualitative testing however showed that the accuracy wasn't any better than iTracker. Even worse, the latency was significantly worse, taking almost 1.5 seconds to perform inference. This latency was far worse than our response speed specification of minimum 10Hz (100 ms), forcing us to look into two other alternatives: 
+          <li>Improve the current Nvidia FAZE model by employing techniques such as layer pruning, model quantization, and deployment using Nvidia's TensorRT framework.</li>
+          <li>Seek another model or architecture that can provide good results while running in real-time.</li>
+        
+          <br>
+
+        Due to the extensive development time required for the first approach, we decided to focus on the second approach for the time being, to get an end-to-end system fully working as soon as possible. How did we do this? We'd earlier tried running the the demo provided by <a href="https://antoinelame.fr/en/gazetracking">Antoine Lamé</a> on our Jetson, and found that it was incredibly fast and could run in real-time. Inspired by this, we dug into the demo and found that it relied on a pretrained model provided by DLIB for estimating facial landmarks and pupil locations. Thus, by extracting the pretrained model, we were able to build a real-time gaze-tracking pipeline around it which performed as follows.
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/DLIB_pipeline.png" alt="Image not found. Please try reloading.">
+        </p>
+
+        This gaze-tracking pipeline consisted of a series of cascaded blocks. A histogram of oriented gradients (HOG) feature extractor was used as a first stage to detect low level features from the frame - edges, corners, and their orientations. These features were then passed into a linear support vector machine (SVM) which grouped these features and determined whether a face was present in the image. If a face was present, it output a bounding box around the face, a bounding box around each eye, and the (x,y) coordinates of each pupil.
+
+        The gaze estimation took in the bounding box and pupil location and computed the distance between the pupil and the edges of the eye bounding box. By taking the ratio of the distances from the pupil and right edges, the horizontal component of the gaze direction could be estimated; likewise for the vertical gaze component. The following figure depicts this graphically.
+
+        <p class="blog-photo-section">
+          <img class="blog-photo" src="img/blog/gaze_ratios.png" alt="Image not found. Please try reloading.">
+        </p>
+
+        The face bounding box is not explicitly used in determining the direction of the gaze, but rather as a filtering step to avoid false positives for the eye bounding boxes; the HOG features of a face are more uniquely identifiable than the HOG features that make up an eye. Therefore, constraining eye bounding boxes to be inside the face bounding box helps avoid false negatives in regions of the image that have HOG features similar to eyes.
+
+        This pipeline worked well and met our latency specifications, as we could detect a patient's eye-gaze within 60ms. However, it did not consistently meet our accuracy specification of being within ±5 degrees of a patient's exact gaze location, although the general gaze direction and magnitude was correct. 
+        </p>
+      
+      <p>
+        How did we get around this challenge? Find out in the next blog post!
+      </p>
+    </div>
+  </div>
+
+  <div id="update-04" class="work-exp hideme">
+    <div class="tag-project">UPDATE 4</div>
+    <div class="title-project">MECHANICAL ASSEMBLY & SYSTEM BUILD</div>
+    <div class="project-date">FEB 24, 2021</div>
+    <div class="author">By: Ali Toyserkani</div>
+    <div class="spacer"></div>
+    <div class="description">
+      <h2>Summary</h2>
+      <p>
+        The internal and external 
+      </p>
+      <h2>Photos</h2>
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/wheelchair_build_outside.jpg" alt="Image not found. Please try reloading.">
+      </p>
+    </div>
+  </div>
+
       <div id="update-03" class="work-exp hideme">
         <div class="tag-project">UPDATE 3</div>
         <div class="title-project">EMBEDDED and ELECTRICAL INTERFACE</div>
