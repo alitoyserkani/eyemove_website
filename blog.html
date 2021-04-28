@@ -131,7 +131,7 @@
         </p>
 
         <p class="blog-photo-section">
-          <img class="blog-photo" src="img/blog/Gazecapture_Architecture.png" alt="Image not found. Please try reloading.">
+          <img class="blog-photo" src="img/blog/Gazecapture_architecture.png" alt="Image not found. Please try reloading.">
         </p>
 
         <p>This trained model yielded good results on the test dataset, however, it failed to perform as well for our use-case. After extensive debugging, it was determined that the root cause was due to irregular detection of facial landmarks (e.g. face and eye bounding boxes given an input image). Due to the difficulty in detecting consistently sized landmarks, the team decided to pivot from our custom trained model to a pre-trained model architecture released by NVIDIA: <a href="https://research.nvidia.com/publication/2019-10_Few-Shot-Adaptive-Gaze"> Few-Shot Adaptive Gaze Estimation</a>. 
@@ -181,11 +181,41 @@
     <div class="description">
       <h2>Summary</h2>
       <p>
-        The internal and external 
+        To mount the internal and external, a popular 6560 aluminum material was purchased from McMaster Carr at lengths of 1 ft and 2 ft, with a 40x20 mm profile. This profile was selected to maximize rigidity, since symmetrical 20x20mm profiles are very susceptible to twist and bending in multiple axes. 
+        To connect the extrusions together at a 90 degree angle, a set of T-slotted gusset brackets were connected to rigidly connect the two pieces. At the end of the 2 ft extrusion, separate 3D printed mounts were made to securely mount each of the sensors in place to the aluminum extrusion.
+        These mounts are attached using 4 M5 T-nuts to the aluminum extrusions. The adapter mounts were fabricated in a tough PLA plastic with a 3D printing device, at a 60% infill. 
+        The sensor mounts were fabricated at a 10 mm thickness to ensure that the sensors stay rigid with respect to the cantilevered extrusions, but also thin enough to allow for easy assembly and reconfiguration. 
+        The Logitech C920 cameras were secured to the printed sensor mounted through the provided tripod screw interface (a single 1/4” screw), making the attachment process simple. 
+        The RealSense D435i was also attached through a similar tripod interface. The RealSense T265 was attached to its sensor mount with two M3 screws which fasten to the back of the tracking sensor. 
       </p>
-      <h2>Photos</h2>
+
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/3dprint_mounts.png" alt="Image not found. Please try reloading.">
+      </p>
+
+      <p>
+        Since there are a considerable amount of compute components, including the Jetson Xavier, Arduino Uno, signal processing board, and power converters, it was important to mount all the electronics securely to the back of the wheelchair, while keeping the compute components close together to decrease cable lengths and potential interference. 
+        The backplate was developed to mount all the electronics in a layout which minimizes cable length, while also allowing for extra components to be mounted later. The piece includes a 5 by 15 matrix of M3 screw holes to easily mount the smaller electronics such as the Arduino Uno, signal processing board, and the DB9 breakout board.
+        It also includes additional custom spaced holes for the larger electronics including the Jetson Xavier and DC-DC converters. The backplate was fabricated using PLA plastic at 60% infill, to ensure that the rigid body can withstand the potential shock forces transmitted through harsh movements of the wheelchair base. 
+        The backplate is secured to the wheelchair with 5 1/4” screws on the slot location in the middle of the backplate, to a mountable aluminum bracket on the back of the wheelchair. 
+        This mounting bracket also holds the wheelchair’s internal system bus for connecting wheelchair specific devices (e.g. motor base and joystick), conveniently placing all the hardware in one place. 
+      </p>
+
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/compute_mounting.png" alt="Image not found. Please try reloading.">
+      </p>
+
+      <p>
+        After putting all the electronics onto the mechanical mounts and aluminum extrusions, the assembly were mounted onto the wheelchair. The final system build can be seen below.
+      </p>
+
+
       <p class="blog-photo-section">
         <img class="blog-photo" src="img/blog/wheelchair_build_outside.jpg" alt="Image not found. Please try reloading.">
+      </p>
+
+      <p class="blog-photo-section">
+        <img class="blog-photo" src="img/blog/system_diagram.png" alt="Image not found. Please try reloading.">
       </p>
     </div>
   </div>
